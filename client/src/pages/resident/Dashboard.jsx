@@ -15,11 +15,13 @@ const Dashboard = () => {
     const [activeTab, setActiveTab] = useState('pending');
     const [notifications, setNotifications] = useState([]);
     const [stats, setStats] = useState({ openComplaints: 0, pendingBills: 0 });
+    const [notices, setNotices] = useState([]);
 
     useEffect(() => {
         fetchPending();
         fetchNotifications();
         fetchStats();
+        fetchNotices();
 
         if (socket && user?.flatNo) {
             socket.emit('join_flat', user.flatNo);
@@ -95,6 +97,15 @@ const Dashboard = () => {
                 openComplaints: compRes.data.filter(c => c.status !== 'Resolved').length,
                 pendingBills: billRes.data.filter(b => b.status === 'Unpaid').length
             });
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const fetchNotices = async () => {
+        try {
+            const res = await api.get('/notice/all');
+            setNotices(res.data.slice(0, 3));
         } catch (err) {
             console.error(err);
         }
@@ -244,8 +255,33 @@ const Dashboard = () => {
                 </div>
             )}
 
-            <div>
-                <h2 className="text-xl font-bold mb-4">Recent Notifications</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                <div>
+                    <h2 className="text-xl font-bold mb-4">Notice Board</h2>
+                    <div className="space-y-4">
+                        {notices.map(n => (
+                            <div key={n._id} className={`p-4 rounded-xl border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
+                                <div className="flex justify-between items-start mb-2">
+                                    <h3 className="font-bold">{n.title}</h3>
+                                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${n.priority === 'Urgent' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
+                                        {n.priority}
+                                    </span>
+                                </div>
+                                <p className={`text-sm mb-3 line-clamp-2 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{n.description}</p>
+                                <div className="flex justify-between items-center text-xs text-slate-400">
+                                    <span className="capitalize">{n.type}</span>
+                                    <span>{new Date(n.date).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        ))}
+                        {notices.length === 0 && (
+                            <p className={darkMode ? 'text-slate-500' : 'text-slate-400'}>No recent notices</p>
+                        )}
+                    </div>
+                </div>
+
+                <div>
+                    <h2 className="text-xl font-bold mb-4">Recent Notifications</h2>
                 <div className="space-y-4">
                     {notifications.slice(0, 5).map(n => (
                         <div key={n._id} onClick={() => handleMarkRead(n._id)} className={`p-4 rounded-xl border cursor-pointer ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'} ${!n.read ? 'border-l-4 border-l-indigo-500' : ''}`}>
@@ -265,6 +301,7 @@ const Dashboard = () => {
                         <p className={darkMode ? 'text-slate-500' : 'text-slate-400'}>No new notifications</p>
                     )}
                 </div>
+            </div>
             </div>
         </div>
     );

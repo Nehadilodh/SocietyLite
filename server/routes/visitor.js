@@ -1,7 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const Visitor = require('../models/Visitor');
-const { authGuard, authResident } = require('../middleware/auth');
+const { auth, authGuard, authResident } = require('../middleware/auth');
+
+// Admin - Get complete visitor history
+router.get('/all', auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Not authorized' });
+    try {
+        const visitors = await Visitor.find().sort({ createdAt: -1 });
+        res.status(200).json({ success: true, data: visitors });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
 
 // Guard - Naya visitor entry add karna + Realtime notify
 router.post('/guard/entry', authGuard, async (req, res) => {

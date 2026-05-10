@@ -12,10 +12,11 @@ const Sidebar = () => {
             return [
                 { path: '/admin/dashboard', name: 'Dashboard', icon: <MdDashboard /> },
                 { path: '/admin/residents', name: 'Residents', icon: <MdPeople /> },
-                { path: '/admin/visitors', name: 'Visitors', icon: <MdSecurity /> },
+                { path: '/admin/guards', name: 'Guards', icon: <MdSecurity /> },
+                { path: '/admin/visitors', name: 'Visitors', icon: <MdHistory /> },
                 { path: '/admin/bills', name: 'Bills', icon: <MdReceipt /> },
                 { path: '/admin/complaints', name: 'Complaints', icon: <MdChat /> },
-                { path: '/admin/notice', name: 'Post Notice', icon: <MdCampaign /> },
+                { path: '/admin/notices', name: 'Notices', icon: <MdCampaign /> },
                 { path: '/admin/inquiries', name: 'Inquiries', icon: <MdHelp /> },
             ];
         } else if (role === 'guard') {

@@ -151,5 +151,41 @@ router.post('/verify', auth, async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+// PUT /api/bill/:id - Update bill details
+router.put('/:id', auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Not authorized' });
+    
+    try {
+        const bill = await Bill.findById(req.params.id);
+        if (!bill) return res.status(404).json({ msg: 'Bill not found' });
+        if (bill.status !== 'Unpaid') return res.status(400).json({ msg: 'Only unpaid bills can be edited' });
+
+        bill.amount = req.body.amount || bill.amount;
+        bill.dueDate = req.body.dueDate || bill.dueDate;
+        
+        await bill.save();
+        res.json({ msg: 'Bill updated successfully', bill });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// DELETE /api/bill/:id - Delete a bill
+router.delete('/:id', auth, async (req, res) => {
+    if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Not authorized' });
+
+    try {
+        const bill = await Bill.findById(req.params.id);
+        if (!bill) return res.status(404).json({ msg: 'Bill not found' });
+        if (bill.status !== 'Unpaid') return res.status(400).json({ msg: 'Only unpaid bills can be deleted' });
+
+        await bill.deleteOne();
+        res.json({ msg: 'Bill deleted successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
 
 module.exports = router;

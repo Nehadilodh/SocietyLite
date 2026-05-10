@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from "../../utils/axios";
 import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import { MdDelete } from 'react-icons/md';
 
 const Inquiries = () => {
     const [inquiries, setInquiries] = useState([]);
@@ -13,20 +14,33 @@ const Inquiries = () => {
 
     const fetchInquiries = async () => {
         try {
-            const res = await api.get('/public/inquiries'); // Assume admin route if available
+            const res = await api.get('/inquiry/all');
+            // Support legacy endpoints just in case
             setInquiries(res.data);
         } catch (err) {
             console.error(err);
         }
     };
 
-    const handleMarkRead = async (id) => {
+    const handleStatusChange = async (id, status) => {
         try {
-            await api.put(`/public/inquiries/${id}/read`);
-            toast.success('Inquiry marked as read');
+            await api.put(`/inquiry/${id}/status`, { status });
+            toast.success('Status updated successfully');
             fetchInquiries();
         } catch (err) {
-            toast.error('Failed to mark read');
+            toast.error('Failed to update status');
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this inquiry?')) {
+            try {
+                await api.delete(`/inquiry/${id}`);
+                toast.success('Inquiry deleted successfully');
+                fetchInquiries();
+            } catch (err) {
+                toast.error('Failed to delete inquiry');
+            }
         }
     };
 
@@ -52,20 +66,22 @@ const Inquiries = () => {
                                 <td className="p-4 text-sm text-slate-500">{i.email} <br /> {i.phone}</td>
                                 <td className="p-4 text-sm max-w-xs truncate">{i.message}</td>
                                 <td className="p-4">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${i.read ? 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                                        }`}>
-                                        {i.read ? 'Read' : 'New'}
-                                    </span>
+                                    <select
+                                        value={i.status === 'read' ? 'Contacted' : i.status === 'new' ? 'New' : i.status}
+                                        onChange={(e) => handleStatusChange(i._id, e.target.value)}
+                                        className={`p-1.5 text-sm rounded-lg border outline-none font-medium ${
+                                            darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300'
+                                        }`}
+                                    >
+                                        <option value="New">New</option>
+                                        <option value="Contacted">Contacted</option>
+                                        <option value="Closed">Closed</option>
+                                    </select>
                                 </td>
                                 <td className="p-4">
-                                    {!i.read && (
-                                        <button
-                                            onClick={() => handleMarkRead(i._id)}
-                                            className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium text-sm"
-                                        >
-                                            Mark Read
-                                        </button>
-                                    )}
+                                    <button onClick={() => handleDelete(i._id)} className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors">
+                                        <MdDelete size={20} />
+                                    </button>
                                 </td>
                             </tr>
                         ))}

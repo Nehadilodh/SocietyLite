@@ -18,11 +18,12 @@ import Login from './pages/Login';
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Residents from './pages/admin/Residents';
+import Guards from './pages/admin/Guards';
 import Visitors from './pages/admin/Visitors';
 import Bills from './pages/admin/Bills';
 import AdminComplaints from './pages/admin/Complaints';
 import ComplaintDetail from './pages/admin/ComplaintDetail';
-import PostNotice from './pages/admin/PostNotice';
+import Notices from './pages/admin/Notices';
 import Inquiries from './pages/admin/Inquiries';
 
 // Guard Pages
@@ -57,11 +58,12 @@ function App() {
               {/* Admin Routes */}
               <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/residents" element={<ProtectedRoute role="admin"><Residents /></ProtectedRoute>} />
+              <Route path="/admin/guards" element={<ProtectedRoute role="admin"><Guards /></ProtectedRoute>} />
               <Route path="/admin/visitors" element={<ProtectedRoute role="admin"><Visitors /></ProtectedRoute>} />
               <Route path="/admin/bills" element={<ProtectedRoute role="admin"><Bills /></ProtectedRoute>} />
               <Route path="/admin/complaints" element={<ProtectedRoute role="admin"><AdminComplaints /></ProtectedRoute>} />
               <Route path="/admin/complaints/:id" element={<ProtectedRoute role="admin"><ComplaintDetail /></ProtectedRoute>} />
-              <Route path="/admin/notice" element={<ProtectedRoute role="admin"><PostNotice /></ProtectedRoute>} />
+              <Route path="/admin/notices" element={<ProtectedRoute role="admin"><Notices /></ProtectedRoute>} />
               <Route path="/admin/inquiries" element={<ProtectedRoute role="admin"><Inquiries /></ProtectedRoute>} />
 
               {/* Guard Routes */}

@@ -4,22 +4,22 @@ import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { MdAdd, MdClose, MdEdit, MdDelete } from 'react-icons/md';
 
-const Residents = () => {
-    const [residents, setResidents] = useState([]);
+const Guards = () => {
+    const [guards, setGuards] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
-    const [formData, setFormData] = useState({ name: '', email: '', phone: '', flatNo: '', password: '' });
+    const [formData, setFormData] = useState({ name: '', phone: '', shift: 'Morning', dutyArea: '', joiningDate: '' });
     const { darkMode } = useAuth();
 
     useEffect(() => {
-        fetchResidents();
+        fetchGuards();
     }, []);
 
-    const fetchResidents = async () => {
+    const fetchGuards = async () => {
         try {
-            const res = await api.get('/user/all');
-            setResidents(res.data);
+            const res = await api.get('/guard/all');
+            setGuards(res.data);
         } catch (e) {
             console.error(e);
         }
@@ -29,34 +29,35 @@ const Residents = () => {
         e.preventDefault();
         try {
             if (isEditing) {
-                await api.put(`/user/${editId}`, formData);
-                toast.success('Resident updated successfully');
+                await api.put(`/guard/${editId}`, formData);
+                toast.success('Guard updated successfully');
             } else {
-                await api.post('/user/add', formData);
-                toast.success('Resident added successfully');
+                await api.post('/guard/add', formData);
+                toast.success('Guard added successfully');
             }
             closeModal();
-            fetchResidents();
+            fetchGuards();
         } catch (err) {
-            toast.error(err.response?.data?.msg || 'Failed to save resident');
+            toast.error(err.response?.data?.msg || 'Failed to save guard');
         }
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this resident?')) {
+        if (window.confirm('Are you sure you want to delete this guard?')) {
             try {
-                await api.delete(`/user/${id}`);
-                toast.success('Resident deleted successfully');
-                fetchResidents();
+                await api.delete(`/guard/${id}`);
+                toast.success('Guard deleted successfully');
+                fetchGuards();
             } catch (err) {
-                toast.error(err.response?.data?.msg || 'Failed to delete resident');
+                toast.error(err.response?.data?.msg || 'Failed to delete guard');
             }
         }
     };
 
-    const openEditModal = (resident) => {
-        setFormData({ name: resident.name, email: resident.email, phone: resident.phone || '', flatNo: resident.flatNo || '', password: '' });
-        setEditId(resident._id);
+    const openEditModal = (guard) => {
+        const dateStr = new Date(guard.joiningDate).toISOString().split('T')[0];
+        setFormData({ name: guard.name, phone: guard.phone, shift: guard.shift, dutyArea: guard.dutyArea, joiningDate: dateStr });
+        setEditId(guard._id);
         setIsEditing(true);
         setShowModal(true);
     };
@@ -65,18 +66,18 @@ const Residents = () => {
         setShowModal(false);
         setIsEditing(false);
         setEditId(null);
-        setFormData({ name: '', email: '', phone: '', flatNo: '', password: '' });
+        setFormData({ name: '', phone: '', shift: 'Morning', dutyArea: '', joiningDate: '' });
     };
 
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Residents Directory</h1>
+                <h1 className="text-2xl font-bold">Guards Directory</h1>
                 <button
                     onClick={() => setShowModal(true)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
                 >
-                    <MdAdd /> Add Resident
+                    <MdAdd /> Add Guard
                 </button>
             </div>
 
@@ -85,22 +86,28 @@ const Residents = () => {
                     <thead className={`border-b ${darkMode ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-slate-50'}`}>
                         <tr>
                             <th className="p-4 font-medium">Name</th>
-                            <th className="p-4 font-medium">Flat No</th>
                             <th className="p-4 font-medium">Phone</th>
-                            <th className="p-4 font-medium">Email</th>
+                            <th className="p-4 font-medium">Shift</th>
+                            <th className="p-4 font-medium">Duty Area</th>
+                            <th className="p-4 font-medium">Joining Date</th>
                             <th className="p-4 font-medium">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                        {residents.map((r) => (
-                            <tr key={r._id} className={darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50'}>
-                                <td className="p-4 font-medium">{r.name}</td>
-                                <td className="p-4">{r.flatNo}</td>
-                                <td className="p-4 text-slate-500 dark:text-slate-400">{r.phone}</td>
-                                <td className="p-4 text-slate-500 dark:text-slate-400">{r.email}</td>
+                        {guards.map((g) => (
+                            <tr key={g._id} className={darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50'}>
+                                <td className="p-4 font-medium">{g.name}</td>
+                                <td className="p-4 text-slate-500 dark:text-slate-400">{g.phone}</td>
+                                <td className="p-4">
+                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${g.shift === 'Morning' ? 'bg-amber-100 text-amber-800' : g.shift === 'Evening' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-800 text-slate-200'}`}>
+                                        {g.shift}
+                                    </span>
+                                </td>
+                                <td className="p-4">{g.dutyArea}</td>
+                                <td className="p-4">{new Date(g.joiningDate).toLocaleDateString()}</td>
                                 <td className="p-4 flex gap-2">
-                                    <button onClick={() => openEditModal(r)} className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"><MdEdit size={20} /></button>
-                                    <button onClick={() => handleDelete(r._id)} className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"><MdDelete size={20} /></button>
+                                    <button onClick={() => openEditModal(g)} className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-colors"><MdEdit size={20} /></button>
+                                    <button onClick={() => handleDelete(g._id)} className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"><MdDelete size={20} /></button>
                                 </td>
                             </tr>
                         ))}
@@ -113,27 +120,31 @@ const Residents = () => {
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <div className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold">{isEditing ? 'Edit Resident' : 'Add New Resident'}</h2>
+                            <h2 className="text-xl font-bold">{isEditing ? 'Edit Guard' : 'Add New Guard'}</h2>
                             <button onClick={closeModal} className="text-slate-400"><MdClose size={24} /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <input type="text" placeholder="Full Name" required
                                 className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
                                 value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                            <input type="email" placeholder="Email Address" required
-                                className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
-                                value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
                             <input type="text" placeholder="Phone Number" required
                                 className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
                                 value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-                            <input type="text" placeholder="Flat Number (e.g. A-101)" required
+                            <select 
                                 className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
-                                value={formData.flatNo} onChange={e => setFormData({ ...formData, flatNo: e.target.value })} />
-                            <input type="password" placeholder={isEditing ? "New Password (leave blank to keep current)" : "Temporary Password"} required={!isEditing}
+                                value={formData.shift} onChange={e => setFormData({ ...formData, shift: e.target.value })} required>
+                                <option value="Morning">Morning</option>
+                                <option value="Evening">Evening</option>
+                                <option value="Night">Night</option>
+                            </select>
+                            <input type="text" placeholder="Duty Area" required
                                 className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
-                                value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+                                value={formData.dutyArea} onChange={e => setFormData({ ...formData, dutyArea: e.target.value })} />
+                            <input type="date" required
+                                className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
+                                value={formData.joiningDate} onChange={e => setFormData({ ...formData, joiningDate: e.target.value })} />
                             <button type="submit" className="w-full bg-indigo-600 text-white p-3 rounded-lg font-medium mt-2 hover:bg-indigo-700">
-                                {isEditing ? 'Update Resident' : 'Create Resident'}
+                                {isEditing ? 'Update Guard' : 'Create Guard'}
                             </button>
                         </form>
                     </div>
@@ -143,4 +154,4 @@ const Residents = () => {
     );
 };
 
-export default Residents;
+export default Guards;

@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import api from '../../utils/axios';
 
 const AdminDashboard = () => {
   const { darkMode } = useAuth();
-  const [stats, setStats] = useState({ residents: 0, guards: 0, complaints: 0, inquiries: 0 });
+  const [stats, setStats] = useState({ totalResidents: 0, totalGuards: 0, pendingComplaints: 0, activeBills: 0, monthlyRevenue: 0 });
+  const [loading, setLoading] = useState(true);
 
   // Mock data for charts
   const complaintData = [
@@ -25,29 +27,42 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchStats = async () => {
-    setStats({ residents: 120, guards: 8, complaints: 15, inquiries: 4 });
+    try {
+        const { data } = await api.get('/dashboard/stats');
+        setStats(data);
+    } catch (error) {
+        console.error('Failed to fetch stats', error);
+    } finally {
+        setLoading(false);
+    }
   };
+
+  if (loading) return <div className="p-8">Loading dashboard...</div>;
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <h1 className="text-2xl font-bold">Admin Dashboard</h1>
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className={`p-6 rounded-3xl border-t-4 border-indigo-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Residents</div>
-          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.residents}</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.totalResidents}</div>
         </div>
         <div className={`p-6 rounded-3xl border-t-4 border-blue-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Guards</div>
-          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.guards}</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.totalGuards}</div>
         </div>
         <div className={`p-6 rounded-3xl border-t-4 border-amber-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
-          <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Complaints</div>
-          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.complaints}</div>
+          <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Pending Complaints</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.pendingComplaints}</div>
+        </div>
+        <div className={`p-6 rounded-3xl border-t-4 border-red-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+          <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Active Bills</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.activeBills}</div>
         </div>
         <div className={`p-6 rounded-3xl border-t-4 border-green-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
-          <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Inquiries</div>
-          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.inquiries}</div>
+          <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Revenue (₹)</div>
+          <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.monthlyRevenue}</div>
         </div>
       </div>
 
