@@ -4,7 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const PostNotice = () => {
-    const [formData, setFormData] = useState({ title: '', description: '', type: 'General', priority: 'Normal' });
+    // FIX 1: Default values small case me
+    const [formData, setFormData] = useState({ title: '', description: '', type: 'general', priority: 'Normal' });
     const { darkMode } = useAuth();
     const [loading, setLoading] = useState(false);
 
@@ -14,8 +15,9 @@ const PostNotice = () => {
         try {
             await api.post('/public/notices', formData);
             toast.success('Notice posted successfully');
-            setFormData({ title: '', description: '', type: 'General', priority: 'Normal' });
+            setFormData({ title: '', description: '', type: 'general', priority: 'Normal' });
         } catch (err) {
+            console.log(err); // Error dekhne ke liye
             toast.error('Failed to post notice');
         }
         setLoading(false);
@@ -38,23 +40,25 @@ const PostNotice = () => {
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Type</label>
+                            {/* FIX 2: Values small case + schema ke hisab se */}
                             <select
                                 className={`w-full p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 border ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300'}`}
                                 value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}
                             >
-                                <option value="General">General</option>
-                                <option value="Maintenance">Maintenance</option>
-                                <option value="Event">Event</option>
+                                <option value="general">General</option>
+                                <option value="meeting">Meeting</option>
+                                <option value="rule">Rule</option>
+                                <option value="event">Event</option>
                             </select>
                         </div>
                         <div>
                             <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Priority</label>
+                            {/* FIX 3: High hataya, schema me nahi hai */}
                             <select
                                 className={`w-full p-3 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 border ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300'}`}
                                 value={formData.priority} onChange={e => setFormData({ ...formData, priority: e.target.value })}
                             >
                                 <option value="Normal">Normal</option>
-                                <option value="High">High</option>
                                 <option value="Urgent">Urgent</option>
                             </select>
                         </div>

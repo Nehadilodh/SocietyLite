@@ -1,13 +1,11 @@
 // Visitor Log routes
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const { auth, authGuard, authResident } = require('../middleware/auth');
 const VisitorLog = require('../models/VisitorLog');
 const Notification = require('../models/Notification');
 
-// @route   GET /api/visitorlog/today
-// @desc    Get today's visitor logs
-// @access  Private
+
 router.get('/today', auth, async (req, res) => {
     try {
         const startOfDay = new Date();

@@ -5,23 +5,29 @@ import { useAuth } from '../../context/AuthContext';
 const GuardHistory = () => {
     const [visitors, setVisitors] = useState([]);
     const [month, setMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+    const [loading, setLoading] = useState(true);
     const { darkMode } = useAuth();
 
     useEffect(() => {
         const fetchVisitors = async () => {
             try {
-                const res = await api.get('/visitor/history');
-                setVisitors(res.data);
+                // FIX 1: Guard wala endpoint use kar
+                const res = await api.get('/visitor/guard/history');
+                setVisitors(res.data.data || res.data || []);
             } catch (err) {
                 console.error(err);
+            } finally {
+                setLoading(false);
             }
         };
         fetchVisitors();
     }, []);
 
+    // FIX 2: entryTime null ho to createdAt use kar
     const filteredVisitors = visitors.filter(v => {
-        if (!v.entryTime) return false;
-        const vMonth = new Date(v.entryTime).toISOString().slice(0, 7);
+        const dateToCheck = v.entryTime || v.createdAt; // Pending ke liye createdAt
+        if (!dateToCheck) return false;
+        const vMonth = new Date(dateToCheck).toISOString().slice(0, 7);
         return vMonth === month;
     });
 
@@ -51,7 +57,11 @@ const GuardHistory = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                        {filteredVisitors.map((v) => (
+                        {loading ? (
+                            <tr>
+                                <td colSpan="7" className="p-8 text-center text-slate-500">Loading...</td>
+                            </tr>
+                        ) : filteredVisitors.map((v) => (
                             <tr key={v._id} className={darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50'}>
                                 <td className="p-4">
                                     <div className="font-medium">{v.visitorName}</div>
@@ -59,9 +69,16 @@ const GuardHistory = () => {
                                 </td>
                                 <td className="p-4">{v.flatNo}</td>
                                 <td className="p-4">{v.purpose}</td>
-                                <td className="p-4 text-slate-500">{new Date(v.entryTime).toLocaleDateString()}</td>
-                                <td className="p-4 text-slate-500">{new Date(v.entryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
-                                <td className="p-4 text-slate-500">{v.exitTime ? new Date(v.exitTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+                                {/* FIX 3: Date ke liye bhi createdAt fallback */}
+                                <td className="p-4 text-slate-500">
+                                    {new Date(v.entryTime || v.createdAt).toLocaleDateString()}
+                                </td>
+                                <td className="p-4 text-slate-500">
+                                    {v.entryTime ? new Date(v.entryTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
+                                </td>
+                                <td className="p-4 text-slate-500">
+                                    {v.exitTime ? new Date(v.exitTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}
+                                </td>
                                 <td className="p-4">
                                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${v.status === 'Approved' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
                                         v.status === 'Denied' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
@@ -73,7 +90,7 @@ const GuardHistory = () => {
                                 </td>
                             </tr>
                         ))}
-                        {filteredVisitors.length === 0 && (
+                        {!loading && filteredVisitors.length === 0 && (
                             <tr>
                                 <td colSpan="7" className="p-8 text-center text-slate-500">No logs found for this month</td>
                             </tr>

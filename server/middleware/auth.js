@@ -1,22 +1,42 @@
 const jwt = require('jsonwebtoken');
 
-const auth = (req, res, next) => {
-    // Get token from header
-    const token = req.header('x-auth-token');
+const auth = function (req, res, next) {
+    let token = req.header('Authorization');
+    if (token && token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length).trimLeft();
+    } else if (!token) {
+        token = req.header('x-auth-token');
+    }
 
-    // Check if not token
     if (!token) {
-        return res.status(401).json({ msg: 'No token, authorization denied' });
+        return res.status(401).json({ success: false, message: 'No token, authorization denied' });
     }
 
     try {
-        // Verify token
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded.user;
+        req.user = decoded.user; // JWT payload me user object hona chahiye
         next();
     } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
+        res.status(401).json({ success: false, message: 'Token is not valid' });
     }
 };
 
-module.exports = auth;
+const authResident = (req, res, next) => {
+    auth(req, res, () => {
+        if (req.user.role !== 'resident') {
+            return res.status(403).json({ success: false, message: 'Resident access only' });
+        }
+        next();
+    });
+};
+
+const authGuard = (req, res, next) => {
+    auth(req, res, () => {
+        if (req.user.role !== 'guard') {
+            return res.status(403).json({ success: false, message: 'Guard access only' });
+        }
+        next();
+    });
+};
+
+module.exports = { auth, authResident, authGuard }; 

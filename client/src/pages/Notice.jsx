@@ -7,14 +7,14 @@ import { MdEvent, MdWarning, MdInfo, MdGroups } from 'react-icons/md';
 
 const Notice = () => {
   const [notices, setNotices] = useState([]);
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState('all'); // FIX 1: small case
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchNotices = async () => {
       try {
         const res = await api.get('/public/notices');
-        setNotices(res.data);
+        setNotices(res.data.data || res.data); // FIX 2: handle both formats
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -24,13 +24,16 @@ const Notice = () => {
     fetchNotices();
   }, []);
 
-  const filteredNotices = filter === 'All' ? notices : notices.filter(n => n.type === filter);
+  // FIX 3: Filter logic sahi kiya
+  const filteredNotices = filter === 'all'
+    ? notices
+    : notices.filter(n => n.type === filter);
 
   const getIcon = (type) => {
     switch (type) {
-      case 'Meeting': return <MdGroups className="text-blue-500" />;
-      case 'Rule': return <MdWarning className="text-amber-500" />;
-      case 'Event': return <MdEvent className="text-green-500" />;
+      case 'meeting': return <MdGroups className="text-blue-500" />;
+      case 'rule': return <MdWarning className="text-amber-500" />;
+      case 'event': return <MdEvent className="text-green-500" />;
       default: return <MdInfo className="text-indigo-500" />;
     }
   };
@@ -44,18 +47,24 @@ const Notice = () => {
           <p className="text-slate-600">Stay updated with the latest announcements and events.</p>
         </div>
 
-        {/* Filters */}
+        {/* Filters - FIX 4: small case values */}
         <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {['All', 'Meeting', 'Rule', 'Event', 'General'].map(tab => (
+          {[
+            { label: 'All', value: 'all' },
+            { label: 'Meeting', value: 'meeting' },
+            { label: 'Rule', value: 'rule' },
+            { label: 'Event', value: 'event' },
+            { label: 'General', value: 'general' }
+          ].map(tab => (
             <button
-              key={tab}
-              onClick={() => setFilter(tab)}
-              className={`px-6 py-2 rounded-full font-medium transition-all ${filter === tab
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              key={tab.value}
+              onClick={() => setFilter(tab.value)}
+              className={`px-6 py-2 rounded-full font-medium transition-all ${filter === tab.value
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
                 }`}
             >
-              {tab}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -88,10 +97,12 @@ const Notice = () => {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-slate-900 mb-2 pr-16">{notice.title}</h3>
-                    <p className="text-slate-600 whitespace-pre-wrap mb-4">{notice.content}</p>
+                    {/* FIX 5: description use kiya content ki jagah */}
+                    <p className="text-slate-600 whitespace-pre-wrap mb-4">{notice.description}</p>
                     <div className="flex items-center gap-4 text-sm text-slate-500">
-                      <span className="bg-slate-100 px-3 py-1 rounded-full">{notice.type}</span>
-                      <span>{new Date(notice.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                      <span className="bg-slate-100 px-3 py-1 rounded-full capitalize">{notice.type}</span>
+                      {/* FIX 6: date use kiya createdAt ki jagah */}
+                      <span>{new Date(notice.date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                     </div>
                   </div>
                 </div>

@@ -11,13 +11,16 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (user && token) {
       const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
-        auth: {
-          token
-        }
+        transports: ['websocket'], // YE ADD KAR - 403 fix hoga
+        auth: { token }
       });
 
       newSocket.on('connect', () => {
-        newSocket.emit('join', user._id || user.id);
+        console.log('Socket connected');
+        // RESIDENT HAI TO FLAT ROOM JOIN KAR
+        if (user.role === 'resident' && user.flatNo) {
+          newSocket.emit('join_flat', user.flatNo);
+        }
       });
 
       setSocket(newSocket);
@@ -25,6 +28,11 @@ export const SocketProvider = ({ children }) => {
       return () => {
         newSocket.disconnect();
       };
+    } else {
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
     }
   }, [user, token]);
 

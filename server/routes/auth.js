@@ -19,9 +19,11 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
+
         const payload = {
             user: {
                 id: user.id,
+                name: user.name,
                 role: user.role,
                 flatNo: user.flatNo
             }
@@ -33,11 +35,11 @@ router.post('/login', async (req, res) => {
             { expiresIn: '5h' },
             (err, token) => {
                 if (err) throw err;
-                
+
                 // Return user data without password
                 const userResponse = { ...user._doc };
                 delete userResponse.password;
-                
+
                 res.json({ token, user: userResponse });
             }
         );

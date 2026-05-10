@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Bill = require('../models/Bill');
 const Notification = require('../models/Notification');
-const auth = require('../middleware/auth');
+const { auth, authGuard, authResident } = require('../middleware/auth');
 
 // GET /api/bill/my
 router.get('/my', auth, async (req, res) => {

@@ -87,6 +87,7 @@ function App() {
           <Toaster
             position="top-center"
             toastOptions={{
+              duration: 2000,
               className: 'font-medium',
               style: {
                 borderRadius: '16px',
@@ -94,6 +95,18 @@ function App() {
                 color: '#334155',
                 boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
                 padding: '16px 24px',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10b981', // Emerald 500
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444', // Red 500
+                  secondary: '#fff',
+                },
               },
             }}
           />

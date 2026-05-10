@@ -4,7 +4,8 @@ const Notice = require('../models/Notice');
 const Inquiry = require('../models/Inquiry');
 const Notification = require('../models/Notification');
 const User = require('../models/User');
-const auth = require('../middleware/auth');
+const { auth, authGuard, authResident } = require('../middleware/auth');
+
 
 // GET /api/public/notices
 router.get('/notices', async (req, res) => {
@@ -60,10 +61,10 @@ router.post('/notices', auth, async (req, res) => {
         const notifications = residents.map(resident => ({
             userId: resident._id,
             message: `New Notice: ${title}`,
-            type: 'Notice',
+            type: 'alert',
             link: `/notices`
         }));
-        
+
         if (notifications.length > 0) {
             await Notification.insertMany(notifications);
         }

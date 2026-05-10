@@ -4,7 +4,7 @@ const Complaint = require('../models/Complaint');
 const ChatMessage = require('../models/ChatMessage');
 const { generateComplaintSummary, generateComplaintReply } = require('../services/geminiService');
 const { sendComplaintResolvedEmail } = require('../services/emailService');
-const auth = require('../middleware/auth');
+const { auth, authGuard, authResident } = require('../middleware/auth');
 
 // Create complaint
 router.post('/', auth, async (req, res) => {
@@ -40,7 +40,7 @@ router.post('/:id/ai-reply', auth, async (req, res) => {
     try {
         const complaint = await Complaint.findById(req.params.id);
         const replyText = await generateComplaintReply(complaint.title, complaint.description);
-        
+
         const chatMsg = new ChatMessage({
             complaintId: complaint._id,
             sender: req.user.id,
@@ -48,10 +48,10 @@ router.post('/:id/ai-reply', auth, async (req, res) => {
             isAI: true
         });
         await chatMsg.save();
-        
+
         const populatedMsg = await ChatMessage.findById(chatMsg._id).populate('sender', 'name role');
         req.io.to(complaint._id.toString()).emit('new_chat_message', populatedMsg);
-        
+
         res.json(populatedMsg);
     } catch (err) {
         res.status(500).send('Server Error');
@@ -105,7 +105,7 @@ router.post('/:id/chat', auth, async (req, res) => {
             message: req.body.message
         });
         await msg.save();
-        
+
         const populatedMsg = await ChatMessage.findById(msg._id).populate('sender', 'name role');
         req.io.to(req.params.id).emit('new_chat_message', populatedMsg);
         res.json(populatedMsg);
