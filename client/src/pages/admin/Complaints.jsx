@@ -37,7 +37,7 @@ const Complaints = () => {
         e.stopPropagation();
         try {
             await api.put(`/complaint/${id}/status`, { status });
-            toast.success('Status updated');
+            toast.success('Status updated - Notification sent to resident');
             fetchComplaints();
         } catch (err) {
             toast.error('Failed to update status');

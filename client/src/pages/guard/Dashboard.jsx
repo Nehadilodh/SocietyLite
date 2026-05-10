@@ -42,8 +42,9 @@ export default function GuardDashboard() {
         toast.error(
           `🚨 SOS ALERT: Flat ${data.flatNo} - ${data.name} needs help!`,
           {
-            duration: 10000,
+            duration: 15000,
             style: {
+              position: 'top-center',
               background: '#DC2626',
               color: 'white',
               fontSize: '16px',

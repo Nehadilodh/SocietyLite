@@ -13,7 +13,7 @@ const AdminDashboard = () => {
     { name: 'Feb', Maintenance: 3, Security: 1, Other: 2 },
     { name: 'Mar', Maintenance: 5, Security: 3, Other: 1 },
   ];
-  
+
   const billData = [
     { name: 'Paid', value: 85 },
     { name: 'Unpaid', value: 15 },
@@ -61,11 +61,11 @@ const AdminDashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={darkMode ? "#334155" : "#E2E8F0"} />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} stroke={darkMode ? "#94a3b8" : "#64748b"} />
                 <YAxis axisLine={false} tickLine={false} stroke={darkMode ? "#94a3b8" : "#64748b"} />
-                <Tooltip cursor={{fill: darkMode ? '#1e293b' : '#F1F5F9'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', background: darkMode ? '#1e293b' : '#fff', color: darkMode ? '#fff' : '#000'}} />
-                <Legend iconType="circle" wrapperStyle={{color: darkMode ? '#fff' : '#000'}} />
-                <Bar dataKey="Maintenance" stackId="a" fill="#4F46E5" radius={[0,0,4,4]} />
+                <Tooltip cursor={{ fill: darkMode ? '#1e293b' : '#F1F5F9' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', background: darkMode ? '#1e293b' : '#fff', color: darkMode ? '#fff' : '#000' }} />
+                <Legend iconType="circle" wrapperStyle={{ color: darkMode ? '#fff' : '#000' }} />
+                <Bar dataKey="Maintenance" stackId="a" fill="#4F46E5" radius={[0, 0, 4, 4]} />
                 <Bar dataKey="Security" stackId="a" fill="#F59E0B" />
-                <Bar dataKey="Other" stackId="a" fill="#10B981" radius={[4,4,0,0]} />
+                <Bar dataKey="Other" stackId="a" fill="#10B981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -80,8 +80,8 @@ const AdminDashboard = () => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', background: darkMode ? '#1e293b' : '#fff', color: darkMode ? '#fff' : '#000'}} />
-                <Legend iconType="circle" wrapperStyle={{color: darkMode ? '#fff' : '#000'}} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', background: darkMode ? '#1e293b' : '#fff', color: darkMode ? '#fff' : '#000' }} />
+                <Legend iconType="circle" wrapperStyle={{ color: darkMode ? '#fff' : '#000' }} />
               </PieChart>
             </ResponsiveContainer>
           </div>

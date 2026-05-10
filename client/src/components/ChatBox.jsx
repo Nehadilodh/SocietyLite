@@ -68,14 +68,20 @@ const ChatBox = ({ complaintId }) => {
     <div className={`flex flex-col h-96 ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
       <div className={`flex-1 overflow-y-auto p-4 space-y-4 border-b ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
         {messages.map((msg, idx) => {
-          const isMe = msg.sender?._id === (user?.id || user?._id);
+          // CHUNK 5 FIX: Resident right, AI+Admin left
+          const isResident = msg.sender?.role === 'resident' && !msg.isAI;
+          const isMe = msg.sender?._id === (user?.id || user?._id) && isResident;
+
           return (
             <div key={idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
               <span className={`text-xs mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                {msg.sender?.name} {msg.isAI && <span className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] ml-1 font-bold">AI</span>}
+                {msg.isAI ? 'AI Assistant' : msg.sender?.name}
+                {msg.isAI && <span className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] ml-1 font-bold">AI</span>}
+                {msg.sender?.role === 'admin' && !msg.isAI && <span className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-1.5 py-0.5 rounded text-[10px] ml-1 font-bold">ADMIN</span>}
               </span>
               <div className={`px-4 py-2 rounded-2xl max-w-[80%] ${msg.isAI ? (darkMode ? 'bg-indigo-900/40 text-indigo-100 border border-indigo-700/50' : 'bg-indigo-50 text-indigo-900 border border-indigo-100') :
-                  isMe ? 'bg-indigo-600 text-white' : (darkMode ? 'bg-slate-700 text-slate-200' : 'bg-slate-100 text-slate-800')
+                  isMe ? 'bg-indigo-600 text-white' :
+                    (darkMode ? 'bg-slate-700 text-slate-200' : 'bg-slate-100 text-slate-800')
                 }`}>
                 <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
               </div>

@@ -23,27 +23,38 @@ const Dashboard = () => {
 
         if (socket && user?.flatNo) {
             socket.emit('join_flat', user.flatNo);
+            socket.emit('join_user', user.id);
 
-            // SIRF EK EVENT SUNO - visitor_request
             socket.on('visitor_request', (visitor) => {
-                toast.success(`🔔 New Visitor: ${visitor.visitorName} at Gate`);
+                toast.success(`🔔 New Visitor: ${visitor.visitorName} at Gate`, { position: 'top-center' });
                 setVisitorAlert(visitor);
                 setPending(prev => {
-                    // Duplicate check karo
                     const exists = prev.find(p => p._id === visitor._id);
                     if (exists) return prev;
                     return [visitor, ...prev];
                 });
             });
 
-            socket.on('new_notification', () => fetchNotifications());
+            socket.on('new_notification', (notif) => {
+                toast(notif.message, {
+                    icon: notif.type === 'complaint' ? '📋' : notif.type === 'visitor' ? '🚪' : '📢',
+                    position: 'top-center'
+                });
+                fetchNotifications();
+            });
+
+            socket.on('complaint_status_update', (data) => {
+                toast.success(`Complaint "${data.title}" status: ${data.status}`, { position: 'top-center' });
+                fetchNotifications();
+            });
 
             return () => {
                 socket.off('visitor_request');
                 socket.off('new_notification');
+                socket.off('complaint_status_update');
             };
         }
-    }, [socket, user?.flatNo]);
+    }, [socket, user?.flatNo, user?.id]);
 
     useEffect(() => {
         if (activeTab === 'history') fetchHistory();
@@ -92,9 +103,9 @@ const Dashboard = () => {
     const handleResponse = async (id, status) => {
         try {
             await api.put(`/visitor/resident/respond/${id}`, { status });
-            toast.success(`Visitor ${status}`);
-            setPending(prev => prev.filter(v => v._id !== id)); // Turant list se hatao
-            fetchHistory(); // History refresh
+            toast.success(`Visitor ${status}`, { position: 'top-center' });
+            setPending(prev => prev.filter(v => v._id !== id));
+            fetchHistory();
         } catch (err) {
             toast.error('Failed to update visitor status');
             console.log(err);
@@ -105,7 +116,8 @@ const Dashboard = () => {
         if (!window.confirm('Send EMERGENCY SOS to all Guards?')) return;
         try {
             await api.post('/visitor/resident/sos');
-            toast.error('🚨 SOS Alert Sent!', { duration: 5000 });
+            // RESIDENT KE LIYE 5 SEC
+            toast.error('🚨 SOS Alert Sent!', { duration: 5000, position: 'top-center' });
         } catch (err) {
             toast.error('SOS Failed');
         }
@@ -122,9 +134,8 @@ const Dashboard = () => {
 
     return (
         <div className="space-y-6">
-            <Toaster position="top-right" />
+            <Toaster position="top-center" />
 
-            {/* Header + SOS */}
             <div className="flex justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-bold">Welcome back, {user?.name}</h1>
@@ -138,7 +149,6 @@ const Dashboard = () => {
                 </button>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className={`p-6 rounded-2xl border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}`}>
                     <p className={`text-sm mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Open Complaints</p>
@@ -150,7 +160,6 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Tabs */}
             <div className="flex gap-2 border-b border-slate-300 dark:border-slate-700">
                 <button
                     onClick={() => setActiveTab('pending')}
@@ -166,12 +175,10 @@ const Dashboard = () => {
                 </button>
             </div>
 
-            {/* Visitor Alert Popup */}
             {visitorAlert && (
                 <VisitorAlertCard visitor={visitorAlert} onUpdate={() => setVisitorAlert(null)} />
             )}
 
-            {/* Pending Tab */}
             {activeTab === 'pending' && (
                 <div className="space-y-4">
                     {pending.length === 0 ? (
@@ -188,7 +195,6 @@ const Dashboard = () => {
                                         <p className="text-xs text-slate-400">Time: {new Date(v.createdAt).toLocaleTimeString()}</p>
                                     </div>
                                 </div>
-                                {/* 3 BUTTON - APPROVE, DENIED, NOT HOME */}
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handleResponse(v._id, 'Approved')}
@@ -215,7 +221,6 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* History Tab */}
             {activeTab === 'history' && (
                 <div className="space-y-2">
                     {history.map(v => (
@@ -239,7 +244,6 @@ const Dashboard = () => {
                 </div>
             )}
 
-            {/* Notifications */}
             <div>
                 <h2 className="text-xl font-bold mb-4">Recent Notifications</h2>
                 <div className="space-y-4">
@@ -247,7 +251,10 @@ const Dashboard = () => {
                         <div key={n._id} onClick={() => handleMarkRead(n._id)} className={`p-4 rounded-xl border cursor-pointer ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'} ${!n.read ? 'border-l-4 border-l-indigo-500' : ''}`}>
                             <div className="flex justify-between items-center">
                                 <div>
-                                    <span className={`text-xs uppercase font-bold mr-2 ${n.type === 'sos' ? 'text-red-500' : 'text-indigo-500'}`}>{n.type}</span>
+                                    <span className={`text-xs uppercase font-bold mr-2 ${n.type === 'sos' ? 'text-red-500' :
+                                            n.type === 'complaint' ? 'text-amber-500' :
+                                                n.type === 'visitor' ? 'text-green-500' : 'text-indigo-500'
+                                        }`}>{n.type}</span>
                                     <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>{n.message}</span>
                                 </div>
                                 <span className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{new Date(n.createdAt).toLocaleDateString()}</span>
