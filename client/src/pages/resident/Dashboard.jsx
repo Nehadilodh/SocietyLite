@@ -149,7 +149,9 @@ const Dashboard = () => {
 
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold">Welcome back, {user?.name}</h1>
+                    <h1 className={`${darkMode ? 'text-white' : 'text-slate-900'} text-2xl font-bold`}>
+                        Welcome back, Resident
+                    </h1>
                     <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Flat No: {user?.flatNo}</p>
                 </div>
                 <button
@@ -243,9 +245,9 @@ const Dashboard = () => {
                             <div className="flex items-center gap-3">
                                 <span className="text-xs text-slate-400">{new Date(v.createdAt).toLocaleDateString()}</span>
                                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${v.status === 'Approved' ? 'bg-green-100 text-green-700' :
-                                        v.status === 'Denied' ? 'bg-red-100 text-red-700' :
-                                            v.status === 'Not Home' ? 'bg-blue-100 text-blue-700' :
-                                                'bg-yellow-100 text-yellow-700'
+                                    v.status === 'Denied' ? 'bg-red-100 text-red-700' :
+                                        v.status === 'Not Home' ? 'bg-blue-100 text-blue-700' :
+                                            'bg-yellow-100 text-yellow-700'
                                     }`}>
                                     {v.status}
                                 </span>
@@ -256,7 +258,7 @@ const Dashboard = () => {
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                <div>
+                {/* <div>
                     <h2 className="text-xl font-bold mb-4">Notice Board</h2>
                     <div className="space-y-4">
                         {notices.map(n => (
@@ -278,30 +280,49 @@ const Dashboard = () => {
                             <p className={darkMode ? 'text-slate-500' : 'text-slate-400'}>No recent notices</p>
                         )}
                     </div>
-                </div>
+                </div> */}
 
-                <div>
-                    <h2 className="text-xl font-bold mb-4">Recent Notifications</h2>
-                <div className="space-y-4">
-                    {notifications.slice(0, 5).map(n => (
-                        <div key={n._id} onClick={() => handleMarkRead(n._id)} className={`p-4 rounded-xl border cursor-pointer ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'} ${!n.read ? 'border-l-4 border-l-indigo-500' : ''}`}>
-                            <div className="flex justify-between items-center">
-                                <div>
-                                    <span className={`text-xs uppercase font-bold mr-2 ${n.type === 'sos' ? 'text-red-500' :
-                                            n.type === 'complaint' ? 'text-amber-500' :
-                                                n.type === 'visitor' ? 'text-green-500' : 'text-indigo-500'
-                                        }`}>{n.type}</span>
-                                    <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>{n.message}</span>
+                <div className="col-span-1 lg:col-span-2">
+                    <h2 className={`${darkMode ? "text-white" : "text-slate-900"} text-xl font-bold mb-4 text-center`}>Recent Notifications</h2>
+                    <div className="space-y-4 max-w-2xl mx-auto">
+                        {notifications
+                            .filter(n => n.type !== 'notice')
+                            .slice(0, 5)
+                            .map(n => (
+                                <div
+                                    key={n._id}
+                                    onClick={() => handleMarkRead(n._id)}
+                                    className={`p-4 rounded-xl border cursor-pointer ${darkMode
+                                        ? 'bg-slate-800 border-slate-700'
+                                        : 'bg-white border-slate-200'
+                                        } ${!n.read ? 'border-l-4 border-l-indigo-500' : ''}`}
+                                >
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div className="flex-1">
+                                            <span className={`text-xs uppercase font-bold mr-2 ${n.type === 'sos' ? 'text-red-500' :
+                                                n.type === 'complaint' ? 'text-amber-500' :
+                                                    n.type === 'visitor' ? 'text-green-500' :
+                                                        'text-indigo-500'
+                                                }`}>
+                                                {n.type}
+                                            </span>
+                                            <span className={`${darkMode ? 'text-slate-300' : 'text-slate-700'} break-words`}>
+                                                {n.message}
+                                            </span>
+                                        </div>
+                                        <span className={`text-xs shrink-0 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                            {new Date(n.createdAt).toLocaleDateString('en-IN')}
+                                        </span>
+                                    </div>
                                 </div>
-                                <span className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{new Date(n.createdAt).toLocaleDateString()}</span>
-                            </div>
-                        </div>
-                    ))}
-                    {notifications.length === 0 && (
-                        <p className={darkMode ? 'text-slate-500' : 'text-slate-400'}>No new notifications</p>
-                    )}
+                            ))}
+                        {notifications.filter(n => n.type !== 'notice').length === 0 && (
+                            <p className={`${darkMode ? 'text-slate-500' : 'text-slate-400'} text-center py-4`}>
+                                No new notifications
+                            </p>
+                        )}
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     );

@@ -26,6 +26,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    sessionStorage.removeItem('loginToast'); 
+    localStorage.removeItem('token');
     setUser(null);
     setToken(null);
     localStorage.clear();

@@ -14,19 +14,26 @@ const Login = () => {
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await api.post('/auth/login', { ...formData, role });
-      login(res.data.user, res.data.token);
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const res = await api.post('/auth/login', { ...formData, role });
+    login(res.data.user, res.data.token);
+    
+    // Ye check add kar
+    const alreadyShown = sessionStorage.getItem('loginToast');
+    if (!alreadyShown) {
       toast.success('Login successful!');
-      navigate(`/${res.data.user.role}`);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
-    } finally {
-      setLoading(false);
+      sessionStorage.setItem('loginToast', 'true');
     }
-  };
+    
+    navigate(`/${res.data.user.role}`);
+  } catch (err) {
+    toast.error(err.response?.data?.message || 'Login failed');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex">

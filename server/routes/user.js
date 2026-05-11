@@ -31,6 +31,35 @@ router.post('/add', auth, async (req, res) => {
         await user.save();
         res.status(201).json({ msg: 'Resident added successfully', user: { _id: user._id, name: user.name, email: user.email, flatNo: user.flatNo, phone: user.phone } });
     } catch (err) {
+        if (err.code === 11000) {
+            return res.status(400).json({ message: "Email already registered" });
+        }
+        res.status(500).json({ msg: 'Server error' });
+    }
+});
+
+// Update resident profile
+router.put('/profile', auth, async (req, res) => {
+    const { name, phone, password } = req.body;
+    try {
+        let updateData = {};
+        if (name) updateData.name = name;
+        if (phone) updateData.phone = phone;
+
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(password, salt);
+        }
+
+        // Fix: Use req.user.id instead of req.user._id because auth middleware decoded payload stores it as user.id
+        const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true }).select('-password');
+        if (!user) return res.status(404).json({ msg: 'User not found' });
+        
+        res.json({ msg: 'Profile updated successfully', user });
+    } catch (err) {
+        if (err.code === 11000) {
+            return res.status(400).json({ message: "Email already registered" });
+        }
         res.status(500).json({ msg: 'Server error' });
     }
 });
@@ -52,6 +81,9 @@ router.put('/:id', auth, async (req, res) => {
         
         res.json({ msg: 'Resident updated successfully', user });
     } catch (err) {
+        if (err.code === 11000) {
+            return res.status(400).json({ message: "Email already registered" });
+        }
         res.status(500).json({ msg: 'Server error' });
     }
 });

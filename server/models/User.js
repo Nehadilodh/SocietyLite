@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: { type: String, enum: ['admin', 'guard', 'resident'], required: true },
     flatNo: { type: String, required: function() { return this.role === 'resident'; } }, // Only required for residents
-    phone: { type: String },
+    phone: { type: String, required: true, match: /^[0-9]{10}$/ },
     createdAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 

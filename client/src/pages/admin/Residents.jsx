@@ -120,12 +120,23 @@ const Residents = () => {
                             <input type="text" placeholder="Full Name" required
                                 className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
                                 value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-                            <input type="email" placeholder="Email Address" required
-                                className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
-                                value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-                            <input type="text" placeholder="Phone Number" required
-                                className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
-                                value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+                            <div>
+                                <input type="email" placeholder="Email Address" required
+                                    className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
+                                    value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                                {formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && <p className="text-red-500 text-xs mt-1">Invalid email format</p>}
+                            </div>
+                            <div>
+                                <div className="relative">
+                                    <div className={`absolute left-0 top-0 bottom-0 flex items-center px-3 rounded-l-lg border-r ${darkMode ? 'bg-slate-600 border-slate-500 text-slate-200' : 'bg-slate-100 border-slate-300 text-slate-600'}`}>
+                                        +91
+                                    </div>
+                                    <input type="text" placeholder="Phone Number" required maxLength={10}
+                                        className={`w-full p-3 pl-14 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
+                                        value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value.replace(/\D/g, '') })} />
+                                </div>
+                                {formData.phone && formData.phone.length > 0 && formData.phone.length !== 10 && <p className="text-red-500 text-xs mt-1">Phone must be 10 digits</p>}
+                            </div>
                             <input type="text" placeholder="Flat Number (e.g. A-101)" required
                                 className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-300'}`}
                                 value={formData.flatNo} onChange={e => setFormData({ ...formData, flatNo: e.target.value })} />

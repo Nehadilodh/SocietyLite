@@ -28,12 +28,12 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-        const { data } = await api.get('/dashboard/stats');
-        setStats(data);
+      const { data } = await api.get('/dashboard/stats');
+      setStats(data);
     } catch (error) {
-        console.error('Failed to fetch stats', error);
+      console.error('Failed to fetch stats', error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -43,24 +43,24 @@ const AdminDashboard = () => {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <h1 className="text-2xl font-bold">Admin Dashboard</h1>
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className={`p-6 rounded-3xl border-t-4 border-indigo-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+        <div className={`p-6 rounded-3xl border-t-4 border-indigo-500 shadow-lg ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Residents</div>
           <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.totalResidents}</div>
         </div>
-        <div className={`p-6 rounded-3xl border-t-4 border-blue-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+        <div className={`p-6 rounded-3xl border-t-4 border-blue-500 shadow-lg ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Guards</div>
           <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.totalGuards}</div>
         </div>
-        <div className={`p-6 rounded-3xl border-t-4 border-amber-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+        <div className={`p-6 rounded-3xl border-t-4 border-amber-500 shadow-lg ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Pending Complaints</div>
           <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.pendingComplaints}</div>
         </div>
-        <div className={`p-6 rounded-3xl border-t-4 border-red-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+        {/* <div className={`p-6 rounded-3xl border-t-4 border-red-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Active Bills</div>
           <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.activeBills}</div>
-        </div>
-        <div className={`p-6 rounded-3xl border-t-4 border-green-500 shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+        </div> */}
+        <div className={`p-6 rounded-3xl border-t-4 border-green-500 shadow-lg ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <div className="text-slate-500 text-sm font-bold mb-2 uppercase tracking-wider">Revenue (₹)</div>
           <div className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{stats.monthlyRevenue}</div>
         </div>
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-8">
-        <div className={`p-6 rounded-3xl h-[400px] flex flex-col shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+        <div className={`p-6 rounded-3xl h-[400px] flex flex-col shadow-lg ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <h3 className={`font-bold mb-6 ${darkMode ? 'text-white' : 'text-slate-800'}`}>Monthly Complaints</h3>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className={`p-6 rounded-3xl h-[400px] flex flex-col shadow-sm ${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
+        <div className={`p-6 rounded-3xl h-[400px] flex flex-col shadow-sm${darkMode ? 'bg-slate-800' : 'bg-white'}`}>
           <h3 className={`font-bold mb-6 ${darkMode ? 'text-white' : 'text-slate-800'}`}>Bill Payment Status</h3>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">

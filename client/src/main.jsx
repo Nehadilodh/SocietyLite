@@ -11,7 +11,11 @@ createRoot(document.getElementById('root')).render(
     <AuthProvider>
       <SocketProvider>
         <App />
-        <Toaster position="top-right" />
+        <Toaster position="top-right"
+        // toastOptions={{
+        //   duration: 3000,
+        // }}
+        />
       </SocketProvider>
     </AuthProvider>
   </StrictMode>,
