@@ -19,6 +19,10 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
+        if (user.role !== req.body.role) {
+            return res.status(401).json({ msg: "Invalid login tab selected for this user." });
+        }
+
 
         const payload = {
             user: {

@@ -45,73 +45,62 @@ function App() {
     <AuthProvider>
       <SocketProvider>
         <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/notice" element={<Notice />} />
-            <Route path="/login" element={<Login />} />
+          <div className="min-h-screen flex flex-col dark:bg-gray-900 dark:text-gray-100 bg-white text-slate-900 transition-colors duration-300">
+            <main className="flex-grow flex flex-col">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/notice" element={<Notice />} />
+                <Route path="/login" element={<Login />} />
 
-            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-              <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/resident" element={<ProtectedRoute role="resident"><ResidentDashboard /></ProtectedRoute>} />
-              {/* Admin Routes */}
-              <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/admin/residents" element={<ProtectedRoute role="admin"><Residents /></ProtectedRoute>} />
-              <Route path="/admin/guards" element={<ProtectedRoute role="admin"><Guards /></ProtectedRoute>} />
-              <Route path="/admin/visitors" element={<ProtectedRoute role="admin"><Visitors /></ProtectedRoute>} />
-              <Route path="/admin/bills" element={<ProtectedRoute role="admin"><Bills /></ProtectedRoute>} />
-              <Route path="/admin/complaints" element={<ProtectedRoute role="admin"><AdminComplaints /></ProtectedRoute>} />
-              <Route path="/admin/complaints/:id" element={<ProtectedRoute role="admin"><ComplaintDetail /></ProtectedRoute>} />
-              <Route path="/admin/notices" element={<ProtectedRoute role="admin"><Notices /></ProtectedRoute>} />
-              <Route path="/admin/inquiries" element={<ProtectedRoute role="admin"><Inquiries /></ProtectedRoute>} />
+                <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                  <Route path="/admin" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/resident" element={<ProtectedRoute role="resident"><ResidentDashboard /></ProtectedRoute>} />
+                  {/* Admin Routes */}
+                  <Route path="/admin/dashboard" element={<ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/admin/residents" element={<ProtectedRoute role="admin"><Residents /></ProtectedRoute>} />
+                  <Route path="/admin/guards" element={<ProtectedRoute role="admin"><Guards /></ProtectedRoute>} />
+                  <Route path="/admin/visitors" element={<ProtectedRoute role="admin"><Visitors /></ProtectedRoute>} />
+                  <Route path="/admin/bills" element={<ProtectedRoute role="admin"><Bills /></ProtectedRoute>} />
+                  <Route path="/admin/complaints" element={<ProtectedRoute role="admin"><AdminComplaints /></ProtectedRoute>} />
+                  <Route path="/admin/complaints/:id" element={<ProtectedRoute role="admin"><ComplaintDetail /></ProtectedRoute>} />
+                  <Route path="/admin/notices" element={<ProtectedRoute role="admin"><Notices /></ProtectedRoute>} />
+                  <Route path="/admin/inquiries" element={<ProtectedRoute role="admin"><Inquiries /></ProtectedRoute>} />
 
-              {/* Guard Routes */}
-              <Route path="/guard" element={<GuardDashboard />} />
-              {/* <Route path="/guard/dashboard" element={<ProtectedRoute role="guard"><GuardDashboard /></ProtectedRoute>} /> */}
-              <Route path="/guard/entry" element={<ProtectedRoute role="guard"><VisitorEntry /></ProtectedRoute>} />
-              <Route path="/guard/log" element={<ProtectedRoute role="guard"><TodaysLog /></ProtectedRoute>} />
-              <Route path="/guard/history" element={<ProtectedRoute role="guard"><GuardHistory /></ProtectedRoute>} />
+                  {/* Guard Routes */}
+                  <Route path="/guard" element={<GuardDashboard />} />
+                  <Route path="/guard/entry" element={<ProtectedRoute role="guard"><VisitorEntry /></ProtectedRoute>} />
+                  <Route path="/guard/log" element={<ProtectedRoute role="guard"><TodaysLog /></ProtectedRoute>} />
+                  <Route path="/guard/history" element={<ProtectedRoute role="guard"><GuardHistory /></ProtectedRoute>} />
 
-              {/* Resident Routes */}
-              <Route path="/resident/dashboard" element={<ProtectedRoute role="resident"><ResidentDashboard /></ProtectedRoute>} />
-              <Route path="/resident/profile" element={<ProtectedRoute role="resident"><MyProfile /></ProtectedRoute>} />
-              <Route path="/resident/bills" element={<ProtectedRoute role="resident"><MyBills /></ProtectedRoute>} />
-              <Route path="/resident/complaints" element={<ProtectedRoute role="resident"><ResidentComplaints /></ProtectedRoute>} />
-              <Route path="/resident/complaints/:id" element={<ProtectedRoute role="resident"><ResidentComplaintDetail /></ProtectedRoute>} />
-              <Route path="/resident/notice" element={<ProtectedRoute role="resident"><ResidentNotice /></ProtectedRoute>} />
+                  {/* Resident Routes */}
+                  <Route path="/resident/dashboard" element={<ProtectedRoute role="resident"><ResidentDashboard /></ProtectedRoute>} />
+                  <Route path="/resident/profile" element={<ProtectedRoute role="resident"><MyProfile /></ProtectedRoute>} />
+                  <Route path="/resident/bills" element={<ProtectedRoute role="resident"><MyBills /></ProtectedRoute>} />
+                  <Route path="/resident/complaints" element={<ProtectedRoute role="resident"><ResidentComplaints /></ProtectedRoute>} />
+                  <Route path="/resident/complaints/:id" element={<ProtectedRoute role="resident"><ResidentComplaintDetail /></ProtectedRoute>} />
+                  <Route path="/resident/notice" element={<ProtectedRoute role="resident"><ResidentNotice /></ProtectedRoute>} />
 
-              {/* Fallback */}
-              <Route path="/" element={<ProtectedRoute><ResidentDashboard /></ProtectedRoute>} />
-            </Route>
-          </Routes>
+                  {/* Fallback */}
+                  <Route path="/" element={<ProtectedRoute><ResidentDashboard /></ProtectedRoute>} />
+                </Route>
+              </Routes>
+            </main>
 
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              duration: 2000,
-              // className: 'font-medium',
-              // style: {
-              //   borderRadius: '16px',
-              //   background: '#fff',
-              //   color: '#334155',
-              //   boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-              //   padding: '16px 24px',
-              // },
-              // success: {
-              //   iconTheme: {
-              //     primary: '#10b981', // Emerald 500
-              //     secondary: '#fff',
-              //   },
-              // },
-              error: {
-                iconTheme: {
-                  primary: '#ef4444', // Red 500
-                  secondary: '#fff',
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                duration: 2000,
+                error: {
+                  iconTheme: {
+                    primary: '#ef4444', // Red 500
+                    secondary: '#fff',
+                  },
                 },
-              },
-            }}
-          />
+              }}
+            />
+          </div>
         </Router>
       </SocketProvider>
     </AuthProvider>
